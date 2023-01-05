@@ -29,11 +29,11 @@ regd_users.post("/login", (req,res) => {
     return res.status(400).json({message: "Missing password and/or username"});
   }
   if(authenticatedUser(req.query.username,req.query.password)) {
+    let user = {"username": req.query.username, "password": req.query.password};
     let accessToken = jwt.sign({
-        username: req.query.username, 
-        password: req.query.password
+        data: user
       }, 'access', { expiresIn: 60 * 60 });
-
+    req.session.user = user;
     req.session.authorization = {
         accessToken
     }
@@ -48,9 +48,24 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
+  if(!req.query.review) {
+      return res.status(400).json({message: "No review submitted"});
+  }
   let book = books[req.params.isbn];
-  let reviews = book.reviews;
-  let username = req.session.authorization["username"];
+  let username = req.session.user["username"];
+  let review = req.query.review;//{"user": username, "review": req.query.review};
+  let already = false;
+  //return res.send(book.reviews)
+  for(let i = 0; i < book.reviews; i++) {
+      if(book.reviews[i]["username"] == username) {
+          book.reviews[i] = review;
+          already = true;
+      }
+  }
+  if(!already) {
+    book.reviews[username] = review; 
+  }
+  return res.send("added review")
 });
 
 module.exports.authenticated = regd_users;
