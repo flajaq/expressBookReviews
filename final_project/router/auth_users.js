@@ -6,23 +6,51 @@ const regd_users = express.Router();
 let users = [];
 
 const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
+    for(let i=0; i < users.length; i++) {
+        if(username == users[i].username) {
+            return false;
+        }
+    }
+    return true;
 }
 
 const authenticatedUser = (username,password)=>{ //returns boolean
-//write code to check if username and password match the one we have in records.
+    for(let i = 0; i < users.length; i++) {
+        if(username == users[i].username && password ==users[i].password) {
+            return true;
+        }
+    }
+    return false;
 }
 
 //only registered users can login
 regd_users.post("/login", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  if(!req.query.username || !req.query.password) {
+    return res.status(400).json({message: "Missing password and/or username"});
+  }
+  if(authenticatedUser(req.query.username,req.query.password)) {
+    let accessToken = jwt.sign({
+        username: req.query.username, 
+        password: req.query.password
+      }, 'access', { expiresIn: 60 * 60 });
+
+    req.session.authorization = {
+        accessToken
+    }
+    return res.status(200).json({message: "User logged in"});
+  }
+  if(!isValid(req.query.username) && ! authenticatedUser(req.query.username,req.query.password)) {
+    return res.status(400).json({message: "Wrong Password"});
+  } else {
+      return res.status(400).json({message: "User not registered"})
+  }
 });
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  let book = books[req.params.isbn];
+  let reviews = book.reviews;
+  let username = req.session.authorization["username"];
 });
 
 module.exports.authenticated = regd_users;
