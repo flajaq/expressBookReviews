@@ -65,7 +65,19 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   if(!already) {
     book.reviews[username] = review; 
   }
-  return res.send("added review")
+  return res.status(200).json({message: "Review added",book});
+});
+
+// Add a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    let book = books[req.params.isbn];
+    let username = req.session.user["username"];
+    for(let i = 0; i < book.reviews; i++) {
+        if(book.reviews[i]["username"] == username) {
+            delete book.reviews[i]
+        }
+    }
+    return res.status(200).json({message: "Deleted your review",book})
 });
 
 module.exports.authenticated = regd_users;

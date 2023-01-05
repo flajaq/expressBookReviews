@@ -67,5 +67,40 @@ public_users.get('/review/:isbn',function (req, res) {
   let reviews = book.reviews;
   return res.send(JSON.stringify({reviews},null,4));
 });
+/*
+public_users.get('/', async function (req, res) {
+    try {
+      const result = await AsyncGetBooks();
+      return res.send(JSON.stringify({result},null,4));
+    } catch (error) {
+      return res.status(500).json({error: error.message});
+    }
+});
+public_users.get('/isbn/:isbn', async function (req, res) {
+    try {
+      const result = await AsyncGetBooksByISBN();
+      return res.send(JSON.stringify({result},null,4));
+    } catch (error) {
+      return res.status(500).json({error: error.message});
+    }
+});
+public_users.get('/author/:author', async function (req, res) {
+    try {
+      const result = await AsyncGetBooksByAuthor();
+      return res.send(JSON.stringify({result},null,4));
+    } catch (error) {
+      return res.status(500).json({error: error.message});
+    }
+});
+public_users.get('/title/:title', async function (req, res) {
+    try {
+      const result = await AsyncGetBooksByTitle();
+      return res.send(JSON.stringify({result},null,4));
+    } catch (error) {
+      return res.status(500).json({error: error.message});
+    }
+});
+*/
+  
 
 module.exports.general = public_users;
